@@ -1,41 +1,39 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_BASE = "http://127.0.0.1:5000"; // Flask backend URL
 
-export async function registerUser(name, age) {
-  const response = await fetch(`${API_URL}/user`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, age }),
+export async function createUser(data) {
+  const res = await fetch(`${API_BASE}/user`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
-  return response.json();
+  return res;
 }
 
-export async function getUser(userId) {
-  const response = await fetch(`${API_URL}/user/${userId}`);
-  return response.json();
+export async function getUser(id) {
+  const res = await fetch(`${API_BASE}/user/${id}`);
+  return res;
 }
 
-export async function deleteUser(userId) {
-  const response = await fetch(`${API_URL}/user/${userId}`, {
-    method: "DELETE",
-  });
-  return response.json();
+export async function deleteUser(id) {
+  const res = await fetch(`${API_BASE}/user/${id}`, { method: 'DELETE' });
+  return res;
 }
 
 export async function listUsers() {
-  const response = await fetch(`${API_URL}/users`);
-  return response.json();
-}
-
-export async function addRun(userId, runData) {
-  const response = await fetch(`${API_URL}/runs/${userId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(runData),
-  });
-  return response.json();
+  const res = await fetch(`${API_BASE}/users`);
+  return res;
 }
 
 export async function listRuns(userId) {
-  const response = await fetch(`${API_URL}/runs/${userId}`);
-  return response.json();
+  const res = await fetch(`${API_BASE}/runs/${userId}`);
+  return res;
+}
+
+export async function addRun(userId, runData) {
+  const res = await fetch(`${API_BASE}/runs/${userId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(runData),
+  });
+  return res;
 }

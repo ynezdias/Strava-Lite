@@ -1,0 +1,51 @@
+.create-runner {
+  max-width: 500px;
+  margin: 50px auto;
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #ff416c88;
+}
+
+.create-runner h2 {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ff416c;
+}
+
+.create-runner form {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-runner input {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 50px;
+  border: 1px solid #ff416c;
+  background: #111;
+  color: #fff;
+}
+
+.create-runner button {
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 50px;
+  background: #ff416c;
+  color: #fff;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.create-runner button:hover {
+  transform: scale(1.05);
+}
+
+.result {
+  margin-top: 20px;
+  color: #fff;
+  background: #ff416c33;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}

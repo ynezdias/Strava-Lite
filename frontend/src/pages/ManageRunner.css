@@ -1,0 +1,106 @@
+.manage-runner {
+  max-width: 800px;
+  margin: 50px auto;
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #ff416c88;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff;
+}
+
+.manage-runner h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #ff416c;
+}
+
+/* Sections like Lookup, List Users, Runs */
+.section {
+  border-radius: 15px;
+  background: #111;
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px #ff416c66;
+}
+
+/* Form rows */
+.form-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+input {
+  padding: 10px;
+  flex: 1;
+  min-width: 120px;
+  border-radius: 50px;
+  border: 1px solid #ff416c;
+  background: #111;
+  color: #fff;
+}
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  border-radius: 50px;
+  background: #ff416c;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+button.danger {
+  background: #ff1f1f;
+}
+
+/* Lookup, Users list, Runs list */
+.lookup-result, .users-list, .runs-list {
+  background: #111;
+  border: 1px solid #ff416c44;
+  border-radius: 10px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+/* List items */
+.users-list li, .runs-list li {
+  margin-bottom: 8px;
+}
+
+/* Add run form */
+.add-run-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.add-run-form input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 50px;
+  border: 1px solid #ff416c;
+  background: #111;
+  color: #fff;
+}
+
+/* Small results/messages */
+.result {
+  margin-top: 15px;
+  color: #fff;
+  background: #ff416c33;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}

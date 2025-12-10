@@ -1,106 +1,82 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from flask_restful import Api, Resource
+from flask_cors import CORS
 import uuid
 import os
 
-app = Flask(__name__)
-CORS(app)   # ✅ allow React to access the API
+app = Flask(__name__, template_folder="templates", static_folder="static")
+CORS(app)
 api = Api(app)
 
-# In-memory store
-DATA = {
-    "users": {}   # user_id -> { id, name, age, runs[] }
-}
+# In-memory data store
+# USERS: user_id -> { id, name, age, runs: [ {date, time, distance} ] }
+DATA = {"users": {}}
 
-# Helpers
+# Helper responses
 def bad_request():
     return ("", 400)
 
 def not_found():
     return ("", 404)
 
-# ========== API ENDPOINTS ==========
+# -----------------------
+# API endpoints (as required)
+# -----------------------
 
 class RegisterUser(Resource):
     def post(self):
         if not request.is_json:
             return bad_request()
         body = request.get_json()
-
         name = body.get("name")
         age = body.get("age")
-
-        # Validate age is a number
+        # Age validation: must be an integer
         try:
+            if age is None:
+                raise ValueError
             age = int(age)
-        except:
+        except Exception:
             return bad_request()
 
         user_id = str(uuid.uuid4())
-        DATA["users"][user_id] = {
-            "id": user_id,
-            "name": name,
-            "age": age,
-            "runs": []
-        }
-
-        return jsonify({
-            "id": user_id,
-            "name": name,
-            "age": age
-        })
-
+        DATA["users"][user_id] = {"id": user_id, "name": name, "age": age, "runs": []}
+        return jsonify({"id": user_id, "name": name, "age": age})
 
 class GetUser(Resource):
     def get(self, user_id):
         user = DATA["users"].get(user_id)
         if not user:
             return not_found()
-        return jsonify({
-            "id": user["id"],
-            "name": user["name"],
-            "age": user["age"]
-        })
-
+        return jsonify({"id": user["id"], "name": user["name"], "age": user["age"]})
 
 class RemoveUser(Resource):
     def delete(self, user_id):
         removed = DATA["users"].pop(user_id, None)
-        if not removed:
+        if removed is None:
             return not_found()
         return ("", 200)
 
-
 class ListUsers(Resource):
     def get(self):
-        users = [
-            {"id": u["id"], "name": u["name"], "age": u["age"]}
-            for u in DATA["users"].values()
-        ]
+        users = [{"id": u["id"], "name": u["name"], "age": u["age"]} for u in DATA["users"].values()]
         return jsonify({"users": users})
-
 
 class AddRun(Resource):
     def put(self, user_id):
         user = DATA["users"].get(user_id)
         if not user:
             return not_found()
-
         if not request.is_json:
             return bad_request()
-
         body = request.get_json()
         date = body.get("date")
         time = body.get("time")
         distance = body.get("distance")
-
-        if not date or not time or not distance:
+        if date is None or time is None or distance is None:
             return bad_request()
-
         run = {"date": date, "time": time, "distance": distance}
         user["runs"].append(run)
         return jsonify(run)
-
 
 class ListRuns(Resource):
     def get(self, user_id):
@@ -109,28 +85,33 @@ class ListRuns(Resource):
             return not_found()
         return jsonify({"runs": user["runs"]})
 
+# Register API resource routes - EXACT paths specified in assignment
+api.add_resource(RegisterUser, "/user")                     # POST
+api.add_resource(GetUser, "/user/<string:user_id>")         # GET
+api.add_resource(RemoveUser, "/user/<string:user_id>")      # DELETE
+api.add_resource(ListUsers, "/users")                       # GET
+api.add_resource(AddRun, "/runs/<string:user_id>")          # PUT
+api.add_resource(ListRuns, "/runs/<string:user_id>")        # GET
 
-# Register endpoints
-api.add_resource(RegisterUser, "/user")
-api.add_resource(GetUser, "/user/<string:user_id>")
-api.add_resource(RemoveUser, "/user/<string:user_id>")
-api.add_resource(ListUsers, "/users")
-api.add_resource(AddRun, "/runs/<string:user_id>")
-api.add_resource(ListRuns, "/runs/<string:user_id>")
+# -----------------------
+# Flask-served Frontend (for extra credit)
+# -----------------------
 
+# Serve static files (css, images) from /static
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    return send_from_directory(os.path.join(app.root_path, "static"), filename)
 
-# Optional: Serve React build for extra credit
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_react(path):
-    if os.path.exists(os.path.join(app.static_folder, "index.html")):
-        file_path = os.path.join(app.static_folder, path)
-        if path != "" and os.path.exists(file_path):
-            return send_from_directory(app.static_folder, path)
-        return send_from_directory(app.static_folder, "index.html")
+# Main page (renders template that calls the API endpoints)
+@app.route("/")
+def index():
+    return render_template("index.html")
 
-    return ("React build not found. Run React dev server separately.", 200)
-
+# Health-check or simple info
+@app.route("/info")
+def info():
+    return jsonify({"status": "ok", "endpoints": ["/user (POST)", "/user/<id> (GET, DELETE)", "/users (GET)", "/runs/<id> (PUT, GET)"]})
 
 if __name__ == "__main__":
+    # Use debug=True only for development
     app.run(debug=True)

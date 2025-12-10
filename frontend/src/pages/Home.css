@@ -1,0 +1,44 @@
+.home .hero {
+  text-align: center;
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  border-radius: 15px;
+  margin: 20px;
+  box-shadow: 0 0 20px #ff416c66;
+}
+
+.home h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.home p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.btn {
+  padding: 12px 25px;
+  background: #fff;
+  color: #ff416c;
+  border-radius: 50px;
+  font-weight: bold;
+  margin: 0 10px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+  background: #ffe6e6;
+}
+
+.btn-alt {
+  background: #ff416c;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.btn-alt:hover {
+  background: #fff;
+  color: #ff416c;
+}
