@@ -1,44 +1,25 @@
-.home .hero {
-  text-align: center;
-  padding: 100px 20px;
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  border-radius: 15px;
-  margin: 20px;
-  box-shadow: 0 0 20px #ff416c66;
+.auth-buttons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
-.home h1 {
-  font-size: 3rem;
-  margin-bottom: 20px;
-}
-
-.home p {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-}
-
-.btn {
+.auth-buttons button {
   padding: 12px 25px;
-  background: #fff;
-  color: #ff416c;
   border-radius: 50px;
-  font-weight: bold;
-  margin: 0 10px;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.btn:hover {
-  transform: scale(1.1);
-  background: #ffe6e6;
-}
-
-.btn-alt {
+  border: none;
   background: #ff416c;
-  color: #fff;
-  border: 2px solid #fff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.btn-alt:hover {
-  background: #fff;
-  color: #ff416c;
+.auth-buttons button:hover {
+  transform: scale(1.05);
+}
+
+.auth-buttons .danger {
+  background: #333;
 }

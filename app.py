@@ -1,117 +1,82 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
-import os
 
-app = Flask(__name__, template_folder="templates", static_folder="static")
-CORS(app)
+app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
-# In-memory data store
-# USERS: user_id -> { id, name, age, runs: [ {date, time, distance} ] }
-DATA = {"users": {}}
+# In-memory data store (replace with DB later)
+users = {}
 
-# Helper responses
-def bad_request():
-    return ("", 400)
-
-def not_found():
-    return ("", 404)
-
-# -----------------------
-# API endpoints (as required)
-# -----------------------
-
-class RegisterUser(Resource):
+class Signup(Resource):
     def post(self):
-        if not request.is_json:
-            return bad_request()
-        body = request.get_json()
-        name = body.get("name")
-        age = body.get("age")
-        # Age validation: must be an integer
-        try:
-            if age is None:
-                raise ValueError
-            age = int(age)
-        except Exception:
-            return bad_request()
+        data = request.get_json()
+
+        if not data or 'email' not in data or 'password' not in data:
+            return {}, 400
+
+        for u in users.values():
+            if u['email'] == data['email']:
+                return {"error": "Email already exists"}, 400
 
         user_id = str(uuid.uuid4())
-        DATA["users"][user_id] = {"id": user_id, "name": name, "age": age, "runs": []}
-        return jsonify({"id": user_id, "name": name, "age": age})
+        users[user_id] = {
+            "id": user_id,
+            "name": data.get("name", ""),
+            "email": data["email"],
+            "password": generate_password_hash(data["password"]),
+            "age": data.get("age"),
+            "weight": data.get("weight"),
+            "runs": [],
+            "cycles": [],
+            "goals": [],
+            "medals": []
+        }
 
-class GetUser(Resource):
+        return {
+            "id": user_id,
+            "name": users[user_id]["name"],
+            "email": users[user_id]["email"]
+        }, 200
+
+class Login(Resource):
+    def post(self):
+        data = request.get_json()
+
+        if not data or 'email' not in data or 'password' not in data:
+            return {}, 400
+
+        for user in users.values():
+            if user['email'] == data['email']:
+                if check_password_hash(user['password'], data['password']):
+                    return {
+                        "id": user["id"],
+                        "name": user["name"],
+                        "email": user["email"]
+                    }, 200
+                return {}, 400
+
+        return {}, 404
+
+class GetProfile(Resource):
     def get(self, user_id):
-        user = DATA["users"].get(user_id)
-        if not user:
-            return not_found()
-        return jsonify({"id": user["id"], "name": user["name"], "age": user["age"]})
+        if user_id not in users:
+            return {}, 404
+        user = users[user_id]
+        return {
+            "id": user["id"],
+            "name": user["name"],
+            "email": user["email"],
+            "age": user["age"],
+            "weight": user["weight"]
+        }, 200
 
-class RemoveUser(Resource):
-    def delete(self, user_id):
-        removed = DATA["users"].pop(user_id, None)
-        if removed is None:
-            return not_found()
-        return ("", 200)
-
-class ListUsers(Resource):
-    def get(self):
-        users = [{"id": u["id"], "name": u["name"], "age": u["age"]} for u in DATA["users"].values()]
-        return jsonify({"users": users})
-
-class AddRun(Resource):
-    def put(self, user_id):
-        user = DATA["users"].get(user_id)
-        if not user:
-            return not_found()
-        if not request.is_json:
-            return bad_request()
-        body = request.get_json()
-        date = body.get("date")
-        time = body.get("time")
-        distance = body.get("distance")
-        if date is None or time is None or distance is None:
-            return bad_request()
-        run = {"date": date, "time": time, "distance": distance}
-        user["runs"].append(run)
-        return jsonify(run)
-
-class ListRuns(Resource):
-    def get(self, user_id):
-        user = DATA["users"].get(user_id)
-        if not user:
-            return not_found()
-        return jsonify({"runs": user["runs"]})
-
-# Register API resource routes - EXACT paths specified in assignment
-api.add_resource(RegisterUser, "/user")                     # POST
-api.add_resource(GetUser, "/user/<string:user_id>")         # GET
-api.add_resource(RemoveUser, "/user/<string:user_id>")      # DELETE
-api.add_resource(ListUsers, "/users")                       # GET
-api.add_resource(AddRun, "/runs/<string:user_id>")          # PUT
-api.add_resource(ListRuns, "/runs/<string:user_id>")        # GET
-
-# -----------------------
-# Flask-served Frontend (for extra credit)
-# -----------------------
-
-# Serve static files (css, images) from /static
-@app.route("/static/<path:filename>")
-def static_files(filename):
-    return send_from_directory(os.path.join(app.root_path, "static"), filename)
-
-# Main page (renders template that calls the API endpoints)
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-# Health-check or simple info
-@app.route("/info")
-def info():
-    return jsonify({"status": "ok", "endpoints": ["/user (POST)", "/user/<id> (GET, DELETE)", "/users (GET)", "/runs/<id> (PUT, GET)"]})
+api.add_resource(Signup, "/auth/signup")
+api.add_resource(Login, "/auth/login")
+api.add_resource(GetProfile, "/user/<string:user_id>")
 
 if __name__ == "__main__":
-    # Use debug=True only for development
     app.run(debug=True)

@@ -1,39 +1,58 @@
-const API_BASE = "http://127.0.0.1:5000"; // Flask backend URL
+// src/api.js
 
-export async function createUser(data) {
-  const res = await fetch(`${API_BASE}/user`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+const API_BASE = ""; // same host
+
+// USERS
+export async function createUser({ name, age }) {
+  return fetch(API_BASE + "/user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, age })
   });
-  return res;
 }
 
 export async function getUser(id) {
-  const res = await fetch(`${API_BASE}/user/${id}`);
-  return res;
+  return fetch(API_BASE + "/user/" + encodeURIComponent(id));
 }
 
 export async function deleteUser(id) {
-  const res = await fetch(`${API_BASE}/user/${id}`, { method: 'DELETE' });
-  return res;
+  return fetch(API_BASE + "/user/" + encodeURIComponent(id), { method: "DELETE" });
 }
 
 export async function listUsers() {
-  const res = await fetch(`${API_BASE}/users`);
-  return res;
+  return fetch(API_BASE + "/users");
+}
+
+// RUNS
+export async function addRun(userId, runData) {
+  return fetch(API_BASE + "/runs/" + encodeURIComponent(userId), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(runData)
+  });
 }
 
 export async function listRuns(userId) {
-  const res = await fetch(`${API_BASE}/runs/${userId}`);
-  return res;
+  return fetch(API_BASE + "/runs/" + encodeURIComponent(userId));
 }
 
-export async function addRun(userId, runData) {
-  const res = await fetch(`${API_BASE}/runs/${userId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(runData),
+// Optional: login/signup/profile
+export async function login(credentials) {
+  return fetch(API_BASE + "/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials)
   });
-  return res;
+}
+
+export async function signup(data) {
+  return fetch(API_BASE + "/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+}
+
+export async function getProfile() {
+  return fetch(API_BASE + "/profile");
 }

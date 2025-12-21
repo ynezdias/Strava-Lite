@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { getUser, deleteUser, listUsers, listRuns, addRun } from '../api';
+
+import { getUser, deleteUser, listUsers, listRuns } from "../api";
+
 import './ManageRunner.css';
 
 export default function ManageRunner() {
