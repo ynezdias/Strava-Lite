@@ -3,18 +3,27 @@
 **Author:** Ynez Dias  
 **Email:** ydias@stevens.edu  
 
+---
+
 ## Project Description
 
-Strava Lite is a lightweight running tracker that allows users to register themselves, add running sessions, and manage their running data. The backend is powered by **Flask-RESTful**, and the frontend is a **ReactJS web application** that communicates with the REST API. All data is stored in memory on the server; restarting the server will clear all data.
+**Strava Lite** is a lightweight running tracker that allows users to register, manage, and track their running sessions. The backend is built with **Flask-RESTful**, and the frontend is a **ReactJS web application** that communicates with the REST API.  
 
-**Features:**
-- Create new runners with name and age (UUID generated automatically)
+**Note:** Data is currently stored in-memory on the server; restarting the server will clear all data. You can later integrate a database (e.g., SQLite) for persistent storage.
+
+**Core Features:**
+- Register new runners with name and age (UUID generated automatically)
 - Lookup runner details by ID
 - Delete runners by ID
 - List all existing runners
-- Add run data for a runner (date, time, distance)
-- List all runs for a selected runner
-- Attractive, functional web frontend (extra credit)
+- Add running sessions (date, time, distance)
+- List all runs for a runner
+- Functional and attractive ReactJS frontend
+
+**Extra Credit Frontend Features:**
+- Dark theme with sporty pink highlights
+- Responsive and aligned forms, buttons, and lists
+- Hover effects for buttons and navigation links
 
 ---
 
@@ -30,45 +39,79 @@ Strava Lite is a lightweight running tracker that allows users to register thems
 | `/runs/<user_id>` | GET | List all runs for a user. |
 
 **HTTP Status Codes:**
-- 200 — Success  
-- 400 — Bad request (invalid arguments)  
-- 404 — User not found  
+- **200** — Success  
+- **400** — Bad request (invalid arguments)  
+- **404** — User not found  
 
 ---
 
-## Frontend
+## Frontend Pages
 
-The frontend is a ReactJS application located in the `frontend` folder. It provides a user-friendly interface with the following pages:  
-1. **Home Page** — Welcome and navigation to other pages  
+1. **Home Page** — Welcome page with navigation to other features  
 2. **Create Runner** — Form to register a new runner  
-3. **Manage Runner** — Lookup, delete, list runners, add runs, and list runs  
+3. **Manage Runner** — Lookup, delete, list runners; add and list runs  
+4. **Profile Page** — View runner profile (name, age, runs)  
+5. **Future Features (Planned)**:
+   - Calories calculation  
+   - Goal setting  
+   - Medals & rewards  
+   - Cycling tracking  
+   - Friend comparison  
+   - Personal health records  
+   - Analytics and charts  
 
-**Styling:**  
-- Dark theme with pink highlights  
-- Responsive design and hover effects  
-- Smooth alignment and spacing for forms, buttons, and lists  
+---
+
+## Styling
+
+- Consistent dark theme (`#111` background) with pink highlights (`#ff416c`)  
+- Rounded inputs and buttons with hover animations  
+- Flexbox used for forms and list layouts  
+- Responsive design for mobile and desktop  
 
 ---
 
 ## Bugs / Issues Faced
 
-- **React import/casing issues**: Fixed by ensuring consistent folder/file casing (`pages` vs `Pages`)  
-- **Module not found errors**: Instal
+- **React import/casing issues**: Resolved by ensuring consistent folder/file casing (`pages` vs `Pages`)  
+- **Module not found errors**: Fixed by ensuring correct import paths and installing missing dependencies  
+- **API connection issues**: Solved by ensuring `api.js` points to the correct Flask server URL (`http://localhost:5000`)  
 
-## How to Run
+---
+
+## Setup & Run
 
 ### Backend (Flask API)
+
 ```bash
 cd backend
 python -m venv venv
-venv\Scripts\activate  # On Windows
+venv\Scripts\activate      # On Windows
+# OR source venv/bin/activate  # On Mac/Linux
 pip install -r requirements.txt
 python app.py
 
-## Frontend (React)
+### Frontend(Flask API)
+
+```bash
 cd frontend
 npm install
 npm start
+Frontend will run at: http://localhost:3000
+It will communicate with the Flask backend running at http://localhost:5000.
 
+GitHub Repository
+
+Private repository hosted on GitHub
+
+Include the following in the repository root:
+
+app.py (or backend scripts)
+
+frontend/ folder
+
+requirements.txt
+
+README.md
 
 ## frontend will be accessible at http://localhost:3000 and will communicate with the Flask backend running at http://localhost:5000.
