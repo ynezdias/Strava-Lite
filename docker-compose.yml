@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/strava_lite
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=development_key_only
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    command: >
+      sh -c "flask db upgrade && gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 'app:create_app()'"
+
+  celery_worker:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/strava_lite
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=development_key_only
+    depends_on:
+      - api
+      - redis
+    volumes:
+      - .:/app
+    command: celery -A worker.celery worker --loglevel=info
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=strava_lite
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+volumes:
+  postgres_data:

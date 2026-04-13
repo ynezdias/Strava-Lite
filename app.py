@@ -1,82 +1,66 @@
-from flask import Flask, request, jsonify
-from flask_restful import Api, Resource
+from flask import Flask
+from flask_restful import Api
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
+from config import Config
+from extensions import db, migrate, limiter, cache, socketio
+from prometheus_flask_exporter import PrometheusMetrics
+import structlog
+from flasgger import Swagger
 
-app = Flask(__name__)
-api = Api(app)
-CORS(app)
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-# In-memory data store (replace with DB later)
-users = {}
+    # Redis Cache configuration
+    app.config['CACHE_TYPE'] = 'RedisCache'
+    app.config['CACHE_REDIS_URL'] = app.config['REDIS_URL']
 
-class Signup(Resource):
-    def post(self):
-        data = request.get_json()
+    CORS(app)
 
-        if not data or 'email' not in data or 'password' not in data:
-            return {}, 400
+    db.init_app(app)
+    migrate.init_app(app, db)
+    limiter.init_app(app)
+    cache.init_app(app)
+    socketio.init_app(app)
 
-        for u in users.values():
-            if u['email'] == data['email']:
-                return {"error": "Email already exists"}, 400
+    # Phase 2: Observability - Prometheus
+    metrics = PrometheusMetrics(app)
+    metrics.info('app_info', 'Application info', version='1.0.0')
 
-        user_id = str(uuid.uuid4())
-        users[user_id] = {
-            "id": user_id,
-            "name": data.get("name", ""),
-            "email": data["email"],
-            "password": generate_password_hash(data["password"]),
-            "age": data.get("age"),
-            "weight": data.get("weight"),
-            "runs": [],
-            "cycles": [],
-            "goals": [],
-            "medals": []
-        }
+    # Phase 2: Observability - Structlog Configuration
+    structlog.configure(
+        processors=[
+            structlog.processors.JSONRenderer()
+        ]
+    )
 
-        return {
-            "id": user_id,
-            "name": users[user_id]["name"],
-            "email": users[user_id]["email"]
-        }, 200
+    # Phase 4: API Docs - Swagger
+    swagger = Swagger(app)
 
-class Login(Resource):
-    def post(self):
-        data = request.get_json()
+    api = Api(app)
 
-        if not data or 'email' not in data or 'password' not in data:
-            return {}, 400
+    with app.app_context():
+        # Import resources down here to avoid circular imports
+        from auth import Signup, Login
+        from routes import UserProfile, UserList, UserRuns
+        from analytics import UserAnalytics, Leaderboard
+        
+        # Apply rate limiting globally to auth/registration endpoints if desired
+        limiter.limit("10/minute")(Signup)
+        limiter.limit("10/minute")(Login)
+        limiter.limit("100/day;20/hour")(UserAnalytics)
+        
+        # Add Resources
+        api.add_resource(Signup, "/auth/signup")
+        api.add_resource(Login, "/auth/login")
+        api.add_resource(UserProfile, "/user/<string:user_id>")
+        api.add_resource(UserList, "/users")
+        api.add_resource(UserRuns, "/runs/<string:user_id>")
+        api.add_resource(UserAnalytics, "/analytics/<string:user_id>")
+        api.add_resource(Leaderboard, "/leaderboard")
 
-        for user in users.values():
-            if user['email'] == data['email']:
-                if check_password_hash(user['password'], data['password']):
-                    return {
-                        "id": user["id"],
-                        "name": user["name"],
-                        "email": user["email"]
-                    }, 200
-                return {}, 400
-
-        return {}, 404
-
-class GetProfile(Resource):
-    def get(self, user_id):
-        if user_id not in users:
-            return {}, 404
-        user = users[user_id]
-        return {
-            "id": user["id"],
-            "name": user["name"],
-            "email": user["email"],
-            "age": user["age"],
-            "weight": user["weight"]
-        }, 200
-
-api.add_resource(Signup, "/auth/signup")
-api.add_resource(Login, "/auth/login")
-api.add_resource(GetProfile, "/user/<string:user_id>")
+    return app
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app = create_app()
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
