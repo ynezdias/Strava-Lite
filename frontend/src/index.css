@@ -1,28 +1,9 @@
-/* Global resets */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-body {
-  background: #1a1a1a;
-  color: #fff;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  font-weight: bold;
-}
-
-.container {
-  padding: 20px;
+@layer base {
+  body {
+    @apply bg-darkBg text-white font-sans antialiased;
+  }
 }
