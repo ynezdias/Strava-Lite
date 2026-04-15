@@ -22,3 +22,4 @@ export default function App() {
         </BrowserRouter>
     );
 }
+// Strava Lite database in updating mode
