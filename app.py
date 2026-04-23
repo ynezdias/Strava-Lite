@@ -15,7 +15,8 @@ def create_app(config_class=Config):
     app.config['CACHE_TYPE'] = 'RedisCache'
     app.config['CACHE_REDIS_URL'] = app.config['REDIS_URL']
 
-    CORS(app)
+    # Configure CORS to allow any origin and specific headers for the React dev server
+    CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True, allow_headers=["Content-Type", "Authorization"])
 
     db.init_app(app)
     migrate.init_app(app, db)
