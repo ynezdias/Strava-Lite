@@ -1,9 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-stravaOrange: #fc4c02;
+  --color-stravaPink: #ff416c;
+  --color-darkBg: #0f172a;
+  --color-darkCard: #1e293b;
+}
 
 @layer base {
   body {
-    @apply bg-darkBg text-white font-sans antialiased;
+    background-color: var(--color-darkBg);
+    color: white;
+    font-family: system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

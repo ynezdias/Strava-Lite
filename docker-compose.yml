@@ -17,7 +17,7 @@ services:
     volumes:
       - .:/app
     command: >
-      sh -c "flask db upgrade && gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 'app:create_app()'"
+      sh -c "python -c 'from app import create_app; from extensions import db; app = create_app(); app.app_context().push(); db.create_all(); print(\"DB tables created\")' && gunicorn --worker-class eventlet -w 1 --bind 0.0.0.0:5000 'app:create_app()'"
 
   celery_worker:
     build: .

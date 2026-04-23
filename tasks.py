@@ -3,10 +3,14 @@ from app import create_app
 from extensions import cache
 from flask_socketio import SocketIO
 
-# Create a scoped app instance for the worker
-# so we can interface with extensions (like cache)
-app = create_app()
-app.app_context().push()
+# Create a scoped app instance for the worker via signal
+from celery.signals import worker_process_init
+
+@worker_process_init.connect
+def init_celery_flask_app(**kwargs):
+    from app import create_app
+    app = create_app()
+    app.app_context().push()
 
 # Standalone SocketIO instance for emitting externally (using message queue)
 # It requires the same message_queue URL used by the main app
