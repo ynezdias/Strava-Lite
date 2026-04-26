@@ -38,7 +38,7 @@ export default function LeaderboardPage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-stravaPink/10 blur-[120px] rounded-full"></div>
             </div>
 
-            <div className="max-w-4xl mx-auto p-6 pt-12">
+            <div className="max-w-4xl mx-auto p-6 pt-32">
                 <div className="text-center mb-12">
                     <h1 className="text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-stravaOrange to-stravaPink bg-clip-text text-transparent">
                         Global Champions
