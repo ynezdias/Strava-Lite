@@ -39,6 +39,12 @@ export default function Navbar() {
                     />
                 </div>
 
+                <button 
+                    onClick={handleLogout} 
+                    className="flex items-center gap-2 text-gray-500 hover:text-red-400 font-bold text-xs uppercase tracking-widest transition-all hover:scale-105"
+                >
+                    <LogOut size={16} />
+                    <span className="hidden md:inline">Sign Out</span>
                 </button>
             </div>
         </nav>
