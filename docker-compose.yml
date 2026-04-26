@@ -11,6 +11,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/strava_lite
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=development_key_only
+      - PYTHONPATH=/app
     depends_on:
       - db
       - redis
@@ -25,6 +26,7 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/strava_lite
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=development_key_only
+      - PYTHONPATH=/app
     depends_on:
       - api
       - redis
