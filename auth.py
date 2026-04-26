@@ -29,7 +29,7 @@ def token_required(f):
         except Exception as e:
             return {'message': 'Token is invalid!'}, 401
 
-        return f(current_user, *args, **kwargs)
+        return f(*args, **kwargs, current_user=current_user)
     return decorated
 
 class Signup(Resource):

@@ -8,7 +8,7 @@ from auth import token_required
 class UserAnalytics(Resource):
     @token_required
     @cache.cached(timeout=60, query_string=True)
-    def get(self, current_user, user_id):
+    def get(self, user_id, current_user=None):
         """
         Get analytics and PB for a user
         ---
@@ -84,11 +84,11 @@ class Leaderboard(Resource):
         """
         # Global leaderboard for total distance across all users
         leaders = db.session.query(
-            Run.user_id,
+            User.name,
             func.sum(Run.distance).label('total_distance')
-        ).group_by(Run.user_id).order_by(func.sum(Run.distance).desc()).limit(10).all()
+        ).join(User, Run.user_id == User.id).group_by(User.id, User.name).order_by(func.sum(Run.distance).desc()).limit(10).all()
         
         return [{
-            "user_id": str(r.user_id),
-            "total_distance": float(r.total_distance)
+            "name": r[0],
+            "total_distance": float(r[1])
         } for r in leaders], 200
