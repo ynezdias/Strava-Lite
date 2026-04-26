@@ -7,6 +7,10 @@ Strava Lite is a high-performance, candidate-ready distributed backend system de
 - **Asynchronous Scalability**: Offloaded heavy cache invalidation and WebSocket routing to a background queue (`Celery`); the API instantly returns a snappy 202 `processing` HTTP status without blocking the UI thread.
 - **DDoS and Rate Limiting Protection**: `Flask-Limiter` applies a global 10-req/min ceiling per IP on arbitrary auth routes to completely neutralize brute force attacks.  
 
+<img width="1907" height="1026" alt="image" src="https://github.com/user-attachments/assets/34f3d78c-9e9f-4773-8b58-df4acc7189eb" />
+<img width="1807" height="922" alt="image" src="https://github.com/user-attachments/assets/6fbb7607-4566-4a9e-ba5a-5b6736f21bdf" />
+
+
 ## 🏗 Architecture Diagram
 
 ```mermaid
