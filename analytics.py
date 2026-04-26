@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 from sqlalchemy import func, text
 from extensions import db, cache
-from models import Run
+from models import User, Run
 from auth import token_required
 
 class UserAnalytics(Resource):

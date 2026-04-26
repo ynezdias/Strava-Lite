@@ -8,7 +8,7 @@ import tasks
 
 class UserProfile(Resource):
     @token_required
-    def get(self, current_user, user_id):
+    def get(self, user_id, current_user=None):
         """
         Fetch a user profile
         ---
@@ -38,7 +38,7 @@ class UserProfile(Resource):
         }, 200
 
     @token_required
-    def delete(self, current_user, user_id):
+    def delete(self, user_id, current_user=None):
         if str(current_user.id) != user_id:
             return {"message": "Unauthorized"}, 403
 
@@ -66,7 +66,7 @@ class UserList(Resource):
 
 class UserRuns(Resource):
     @token_required
-    def get(self, current_user, user_id):
+    def get(self, user_id, current_user=None):
         """
         Get all runs for specific user
         ---
@@ -88,7 +88,7 @@ class UserRuns(Resource):
         } for run in runs], 200
 
     @token_required
-    def post(self, current_user, user_id):
+    def post(self, user_id, current_user=None):
         """
         Log a new run
         ---
